@@ -407,57 +407,57 @@ def elastic_net(X, y, rho, pos=False, thr=1e-4, weights=None, vp=None, copy=True
     return lmu, a0, ca, ia, nin, rsq, alm, nlp, jerr
 
 
-def threading_elnet(X, y, rho, pos=False, thr=1e-4, weights=None, vp=None,
-                    standardize=False, nlam=100, maxit=1e5, fit_intercept=False):
+# def threading_elnet(X, y, rho, pos=False, thr=1e-4, weights=None, vp=None,
+#                     standardize=False, nlam=100, maxit=1e5, fit_intercept=False):
 
-    jd = np.zeros(1)        # X to exclude altogether from fitting
-    ulam = None             # User-specified lambda values
+#     jd = np.zeros(1)        # X to exclude altogether from fitting
+#     ulam = None             # User-specified lambda values
 
-    box_constraints = np.zeros((2, X.shape[1]), order='F')
-    box_constraints[1] = 9.9e35 # this is a large number in fortran
+#     box_constraints = np.zeros((2, X.shape[1]), order='F')
+#     box_constraints[1] = 9.9e35 # this is a large number in fortran
 
-    if not pos:
-        box_constraints[0] = -9.9e35
+#     if not pos:
+#         box_constraints[0] = -9.9e35
 
-    # Uniform weighting if no weights are specified.
-    if weights is None:
-        weights = np.ones(X.shape[0], order='F')
-    else:
-        weights = np.array(weights, copy=True, order='F')
+#     # Uniform weighting if no weights are specified.
+#     if weights is None:
+#         weights = np.ones(X.shape[0], order='F')
+#     else:
+#         weights = np.array(weights, copy=True, order='F')
 
-    # Uniform penalties if none were specified.
-    if vp is None:
-        vp = np.ones(X.shape[1], order='F')
-    else:
-        vp = vp.copy()
+#     # Uniform penalties if none were specified.
+#     if vp is None:
+#         vp = np.ones(X.shape[1], order='F')
+#     else:
+#         vp = vp.copy()
 
-    # Call the Fortran wrapper.
-    nx = X.shape[1] + 1
+#     # Call the Fortran wrapper.
+#     nx = X.shape[1] + 1
 
-    # Trick from official wrapper
-    if X.shape[0] < X.shape[1]:
-        flmin = 0.01
-    else:
-        flmin = 1e-4
+#     # Trick from official wrapper
+#     if X.shape[0] < X.shape[1]:
+#         flmin = 0.01
+#     else:
+#         flmin = 1e-4
 
-    # preassign stuff before the size varying loop
-    for i in range(y.shape[0]):
-        lmu, a0, ca, ia, nin, _, _, _, _ = elnet(rho,
-                                                 np.asfortranarray(X, copy=True),
-                                                 np.asfortranarray(y[i]).ravel(),
-                                                 weights,
-                                                 jd,
-                                                 vp,
-                                                 box_constraints,
-                                                 nx,
-                                                 flmin,
-                                                 ulam,
-                                                 thr,
-                                                 nlam=nlam,
-                                                 isd=standardize,
-                                                 maxit=maxit,
-                                                 intr=fit_intercept)
-    return lmu, a0, ca, ia, nin, _, _, _, _
+#     # preassign stuff before the size varying loop
+#     for i in range(y.shape[0]):
+#         lmu, a0, ca, ia, nin, _, _, _, _ = elnet(rho,
+#                                                  np.asfortranarray(X, copy=True),
+#                                                  np.asfortranarray(y[i]).ravel(),
+#                                                  weights,
+#                                                  jd,
+#                                                  vp,
+#                                                  box_constraints,
+#                                                  nx,
+#                                                  flmin,
+#                                                  ulam,
+#                                                  thr,
+#                                                  nlam=nlam,
+#                                                  isd=standardize,
+#                                                  maxit=maxit,
+#                                                  intr=fit_intercept)
+#     return lmu, a0, ca, ia, nin, _, _, _, _
 
 # This part stolen from
 # https://github.com/ceholden/glmnet-python/blob/master/glmnet/utils.py
